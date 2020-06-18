@@ -25,13 +25,23 @@ for subject in subjects:
             os.chdir(pathToFunction)
             stringImage= glob.glob("Datos/DatosOriginales/"+cadena+"/"+j)[0]
             #Llamamos a la función que realiza la transformación con el template.
+            print("Procesando la t1 de "+subject+"...")
             imagenTransf,mytx = ts.Transform_Image("../"+str(stringImage))
         #Si es una lesión lo guardamos en una lista para cuando terminemos con el sujeto
+            print("Guardando la t1 de "+subject+"...")
+            ts.Save_Images_Transformed(subject,imagenTransf,True)
+            print("FINALIZADO")
         else:
             pathToFunction = os.path.join(my_path, "..")
             os.chdir(pathToFunction)
             stringLesion= glob.glob("Datos/DatosOriginales/"+cadena+"/"+j)[0]
             lesionList.append(stringLesion)
+    cont=1
     for lesion in lesionList:
+        print("Procesando las mascaras de las lesiones de "+subject+"... ["+str(cont)+"]")
         mascaraTransf = ts.Transform_Lesion_Mask("../"+lesion,imagenTransf,mytx)
+        print("Guardando las mascaras de las lesiones de "+subject+"... ["+str(cont)+"]")
+        ts.Save_Images_Transformed(subject,mascaraTransf,False,cont)
+        cont+=1
+    print("Finalizado")
         
