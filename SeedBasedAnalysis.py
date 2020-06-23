@@ -4,6 +4,8 @@ import ants
 import nibabel as nib
 import ImagesFunctions as imf
 from scipy import stats
+from nilearn import plotting
+import matplotlib
 coord, timeseries = ld.Load_Timeseries()
 
 coord = np.int_(coord)
