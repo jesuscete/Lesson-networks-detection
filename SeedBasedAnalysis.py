@@ -2,9 +2,17 @@ import numpy as np
 import Load_Data as ld
 import ants
 import nibabel as nib
-#coord, timeseries = ld.Load_Timeseries()
-#coord = np.int_(coord)
-mascaraMatrix, x,y,z = ld.Load_Data_Example()
+import ImagesFunctions as imf
+from scipy import stats
+coord, timeseries = ld.Load_Timeseries()
 
-
-#seed_timeseries = np.mean(timeseries[coord],axis=0)
+coord = np.int_(coord)
+mascaraMatrix, coordMatrix= ld.Load_Coord_Example()
+coordTimeserie = imf.Intersect_Column_Matrix(coord,coordMatrix)
+indiceTimeseries = imf.Return_Index_Coord_Column(coord,coordTimeserie)
+seed_timeseries = imf.SeedTimeseries_return(timeseries,indiceTimeseries)
+timeseries = timeseries.transpose()
+stat_map = np.zeros(timeseries.shape[0])
+for i in range(timeseries.shape[0]):
+    stat_map[i] = stats.pearsonr(seed_timeseries, timeseries[i])[0]
+stat_map[np.where(np.mean(timeseries,axis=1) == 0)] = 0

@@ -3,6 +3,7 @@ import ants
 from pathlib import Path
 import numpy as np
 import nibabel as nib
+import ImagesFunctions as imf
 def Load_Timeseries():
     mod_path = Path(__file__).parent
     #A través de una ruta relativa buscamos la carpeta de almacenamiento de datos.
@@ -29,5 +30,6 @@ def Load_Coord_Example():
     #Cargamos con numpy, la matriz de dentro del fichero.
     ImageExample = nib.load(pathOfData+"/031768_lesson[1].nii.gz")
     mascaraMatriz = ImageExample.get_fdata()
-    x,y,z = np.where(mascaraMatriz != 0)
-    return ImageExample,x,y,z
+    coords = np.where(mascaraMatriz != 0)
+    matrixCoord = imf.arraysCoord_To_MatrixCoord(coords)
+    return ImageExample,matrixCoord
