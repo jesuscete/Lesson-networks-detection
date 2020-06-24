@@ -14,12 +14,7 @@ coord = np.int_(coord)
 time2 = default_timer()
 print("Tiempo en cargar los datos: ", time2-startTime)
 print('Longitud de la lista de timeseries', len(timeseries))
-for ind in range(len(timeseries)):
-    seed_timeseries = imf.SeedTimeseries_return(timeseries[ind],indiceTimeseries[ind])
-    timeseriesT = timeseries[ind].transpose()
-    stat_map = np.zeros(timeseriesT.shape[0])
-    for i in range(timeseriesT.shape[0]):
-        stat_map[i] = stats.pearsonr(seed_timeseries, timeseriesT[i])[0]
-    stat_map[np.where(np.mean(timeseriesT,axis=1) == 0)] = 0
+
+stat_map_list = imf.Get_Pearson_Correlation(timeseries, indiceTimeseries)
 time3 = default_timer()
 print("Tiempo que tarda en hacer el analisis: ", time3-time2)
