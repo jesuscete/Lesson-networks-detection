@@ -54,7 +54,11 @@ def Return_List_Index_coord(CoordTs,CoordLesion):
     coordTsT = CoordTs.transpose()
     CoordLesionT = CoordLesion.transpose()
     indexCoordIntersect = list()
-    for rowa in CoordLesionT:
+    for row in CoordLesionT:
+        if(row in coordTsT):
+            indexCoordIntersect = np.where(coordTsT == row)[0]
+    '''    
+    for rowa in coordTsT:
         cont=0
         if rowa in CoordLesionT:
             for rowb in CoordLesionT:
@@ -62,7 +66,8 @@ def Return_List_Index_coord(CoordTs,CoordLesion):
                     indexCoordIntersect.append(cont)
                     break                  
                 cont+=1
-    return indexCoordIntersect
+    '''
+    return list(indexCoordIntersect)
 '''
 Params: timeseres, Timeserie completo, sin las coordendas.
         indicesTimesereis, Los indices donde la lesión coincide con el timeserie.
