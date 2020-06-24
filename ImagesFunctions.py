@@ -35,7 +35,6 @@ def Return_Index_Coord_Column(Mcoord, Mintersect):
     for r in McoordT:
         for c in MintersectT:
             if(np.array_equal(c,r)):
-
                 resultado.append(cont)
         cont+=1
         
@@ -44,4 +43,21 @@ def Return_Index_Coord_Column(Mcoord, Mintersect):
 def SeedTimeseries_return(timeseries, indices):
     SeedTimeseries = np.mean(timeseries[:,indices],axis=1)
     return SeedTimeseries
-
+'''
+Params: MatrixA, Primera matriz a la hora de hacer la intersección.
+        MatrixB, Segunda matriz de la hacer la intersección.
+Función que crea la intersección entre dos matrices.
+'''
+def Return_List_Index_coord(CoordTs,CoordLesion):
+    coordTsT = CoordTs.transpose()
+    CoordLesionT = CoordLesion.transpose()
+    indexCoordIntersect = list()
+    for rowa in CoordLesionT:
+        cont=0
+        if rowa in CoordLesionT:
+            for rowb in CoordLesionT:
+                if(np.array_equal(rowb,rowa)):
+                    indexCoordIntersect.append(cont)
+                    break                  
+                cont+=1
+    return indexCoordIntersect

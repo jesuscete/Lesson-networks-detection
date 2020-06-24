@@ -5,6 +5,10 @@ import numpy as np
 import nibabel as nib
 import ImagesFunctions as imf
 def Load_Timeseries():
+    #Inicializamos listas:
+    coordenadas = list()
+    timeseries = list()
+    indicesForSeedTs = list()
     mod_path = Path(__file__).parent
     #A través de una ruta relativa buscamos la carpeta de almacenamiento de datos.
     pathOfData =  str((mod_path / str("../Datos/timeseries_N10")).resolve())
@@ -12,14 +16,20 @@ def Load_Timeseries():
     #Partiendo de la estructura: ../DatosOriginales/sujeto/t01/Imagenes
     #Cargamos todos los sujetos
     subjects = glob.glob("**")
+    for subject in subjects:
     #Cargamos con numpy, la matriz de dentro del fichero.
-    matriz = np.loadtxt(pathOfData+"/"+subjects[0])
-    #Separamos de la matriz el timeseries de sus coordenadas.
-    coordenadas = matriz[0:3]
-    timeseries = matriz[3:]
-    #print("Matriz coordenadas:\n", coordenadas)
+        matriz = np.loadtxt(pathOfData+"/"+str(subject))
+        #Separamos de la matriz el timeseries de sus coordenadas.
+        coordenadasSubject =matriz[0:3]
+        timeseriesSubject = matriz[3:]
+        mascaraMatriz,coordenadasLesion = Load_Coord_Example()
+        indices = imf.Return_List_Index_coord(coordenadasSubject,coordenadasLesion)
+        indicesForSeedTs.append(indices)
+        coordenadas.append(coordenadasSubject)
+        timeseries.append(timeseriesSubject)
+        #print("Matriz coordenadas:\n", coordenadas)
     #print("timeseries:\n",timeseries)
-    return coordenadas,timeseries
+    return coordenadas,timeseries, indicesForSeedTs, mascaraMatriz
 
 def Load_Coord_Example():
     cwd = Path.cwd()
