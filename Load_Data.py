@@ -44,7 +44,8 @@ def Load_Coord_Example():
     matrixCoord = imf.arraysCoord_To_MatrixCoord(coords)
     return ImageExample,matrixCoord
 def return_template():
-    my_path = os.path.abspath(os.path.dirname(__file__))
+    cwd = Path.cwd()
+    mod_path = Path(__file__).parent
     #Utilizamos la plantilla MANI152
-    templatePath = os.path.join(my_path, "../Datos/MNI152.nii.gz")
-    return ants.image_read(templatePath)
+    pathOfData =  str((mod_path / '../Datos/MNI152.nii.gz').resolve())
+    return np.array(ants.image_read(pathOfData))

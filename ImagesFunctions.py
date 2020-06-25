@@ -1,6 +1,9 @@
 import numpy as np
 from scipy import stats
 import ImagesFunctions as imf
+import pandas as pd
+from nistats.second_level_model import SecondLevelModel
+
 '''
  Params: coord, Coordenadas a transformar.
  return: Matriz de las coordendas.
@@ -76,8 +79,10 @@ Funcion que lleva a cabo la correlación de pearson para sacar la conectividad d
 y devuelve una lista con todos los mapas disponibles para una sola lesión.
 '''
 def Get_Pearson_Correlation(timeseries, indiceTimeseries):
+    stat_Map_List = list()
+    zfisher_Map = list()
     for ind in range(len(timeseries)):
-        stat_Map_List = list()
+        
         seed_timeseries = imf.SeedTimeseries_return(timeseries[ind],indiceTimeseries[ind])
         timeseriesT = timeseries[ind].transpose()
         stat_map = np.zeros(timeseriesT.shape[0])
@@ -85,4 +90,15 @@ def Get_Pearson_Correlation(timeseries, indiceTimeseries):
             stat_map[i] = stats.pearsonr(seed_timeseries, timeseriesT[i])[0]
         stat_map[np.where(np.mean(timeseriesT,axis=1) == 0)] = 0
         stat_Map_List.append(stat_map)
-    return stat_Map_List
+        zfisher_Map.append(transform_Data_To_fisher_z(stat_map))
+    return stat_Map_List,zfisher_Map
+def transform_Data_To_fisher_z(stat_map):
+    fisherZ_Matrix = np.arctanh(stat_map)
+    return fisherZ_Matrix
+
+def oneSample_ttest(map_list):
+    design_matrix = pd.DataFrame([1]* len(map_list), columns=['intercept'])
+    second_level_model = SecondLevelModel().fit(
+    map_list, design_matrix=design_matrix)
+    z_map = second_level_model.compute_contrast(output_type='z_score')
+    return z_map
