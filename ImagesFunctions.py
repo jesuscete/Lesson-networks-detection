@@ -1,9 +1,12 @@
 import numpy as np
 from scipy import stats
 import ImagesFunctions as imf
+import ants
 import pandas as pd
 from nistats.second_level_model import SecondLevelModel
-
+from nilearn import input_data
+import Load_Data as ld
+from nilearn.input_data import NiftiMasker
 '''
  Params: coord, Coordenadas a transformar.
  return: Matriz de las coordendas.
@@ -60,16 +63,7 @@ def Return_List_Index_coord(CoordTs,CoordLesion):
     for row in CoordLesionT:
         if(row in coordTsT):
             indexCoordIntersect = np.where(coordTsT == row)[0]
-    '''    
-    for rowa in coordTsT:
-        cont=0
-        if rowa in CoordLesionT:
-            for rowb in CoordLesionT:
-                if(np.array_equal(rowb,rowa)):
-                    indexCoordIntersect.append(cont)
-                    break                  
-                cont+=1
-    '''
+
     return list(indexCoordIntersect)
 '''
 Params: timeseres, Timeserie completo, sin las coordendas.
@@ -82,7 +76,6 @@ def Get_Pearson_Correlation(timeseries, indiceTimeseries):
     stat_Map_List = list()
     zfisher_Map = list()
     for ind in range(len(timeseries)):
-        
         seed_timeseries = imf.SeedTimeseries_return(timeseries[ind],indiceTimeseries[ind])
         timeseriesT = timeseries[ind].transpose()
         stat_map = np.zeros(timeseriesT.shape[0])
@@ -93,12 +86,28 @@ def Get_Pearson_Correlation(timeseries, indiceTimeseries):
         zfisher_Map.append(transform_Data_To_fisher_z(stat_map))
     return stat_Map_List,zfisher_Map
 def transform_Data_To_fisher_z(stat_map):
-    fisherZ_Matrix = np.arctanh(stat_map)
+    fisherZ_Matrix = np.arctanh(stat_map.T)
     return fisherZ_Matrix
 
-def oneSample_ttest(map_list):
+def oneSample_ttest(map_list,timeseries,coord):
+    print("hOLII")
+    template = ld.load_timserie_mask()
+    print("alooooo")
     design_matrix = pd.DataFrame([1]* len(map_list), columns=['intercept'])
-    second_level_model = SecondLevelModel().fit(
-    map_list, design_matrix=design_matrix)
+    print("Hasta aqui si")
+    nifti_masker = NiftiMasker(standardize=True, mask_strategy='epi',
+                           memory="nilearn_cache", memory_level=2,
+                           smoothing_fwhm=8)
+    print("me iamgino que hasta aqui llega.")
+    ts = ants.matrix_to_timeseries(template,timeseries[0])
+    print("Esto es nuevo")
+    nifti_masker.fit(ts)
+    print("No estoy seguro de donde ha reventado")
+    zf = np.asmatrix(map_list[0].transpose())
+    imgUsar = nifti_masker.inverse_transform(zf)
+    print("No estoy seguro de donde ha reventado 2")
+    second_level_model = SecondLevelModel().fit(pd.DataFrame(zf), design_matrix=design_matrix)
+    print("Creo que peta aqui")
     z_map = second_level_model.compute_contrast(output_type='z_score')
+
     return z_map

@@ -48,4 +48,10 @@ def return_template():
     mod_path = Path(__file__).parent
     #Utilizamos la plantilla MANI152
     pathOfData =  str((mod_path / '../Datos/MNI152.nii.gz').resolve())
-    return np.array(ants.image_read(pathOfData))
+    return pathOfData
+def load_timserie_mask():
+    cwd = Path.cwd()
+    mod_path = Path(__file__).parent
+    #Utilizamos la plantilla MANI152
+    pathOfData =  str((mod_path / '../Datos/gm_mask_3mm.nii.gz').resolve())
+    return pathOfData
